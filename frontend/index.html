@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rivalry Radar — World Cup Passion Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0b120e;
+    --bg-raised: #111813;
+    --bg-card: #141d17;
+    --line: rgba(243,245,238,0.10);
+    --fg: #f3f5ee;
+    --fg-dim: #93a398;
+    --flare: #ff4b2b;
+    --flare-dim: rgba(255,75,43,0.15);
+    --electric: #3e7bfa;
+    --electric-dim: rgba(62,123,250,0.15);
+    --turf: #2fa25f;
+    --gold: #e8b930;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(47,162,95,0.16), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, rgba(255,75,43,0.08), transparent 55%),
+      var(--bg);
+    color:var(--fg);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:0 24px;}
+  .eyebrow{
+    font-family:'Space Mono',monospace;
+    text-transform:uppercase;
+    letter-spacing:0.14em;
+    font-size:11px;
+    color:var(--turf);
+  }
+  h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:0.01em;margin:0;}
+
+  /* ---------- header ---------- */
+  header{padding:28px 0 0;}
+  .headbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-mark{
+    width:34px;height:34px;border-radius:8px;
+    background:linear-gradient(135deg,var(--flare),var(--electric));
+    display:flex;align-items:center;justify-content:center;font-size:16px;
+  }
+  .brand-name{font-family:'Anton',sans-serif;font-size:20px;letter-spacing:0.02em;}
+  .mode-pill{
+    font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.04em;
+    border:1px solid var(--line);border-radius:999px;padding:6px 12px;color:var(--fg-dim);
+    display:flex;align-items:center;gap:6px;
+  }
+  .mode-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold);}
+
+  /* ---------- hero ---------- */
+  .hero{padding:56px 0 20px;}
+  .hero-title{font-size:clamp(40px,7vw,74px);line-height:0.96;}
+  .hero-title .accent{color:var(--flare);}
+  .hero-sub{color:var(--fg-dim);font-size:16px;max-width:560px;margin-top:14px;line-height:1.55;}
+
+  .matchup{
+    margin-top:36px;
+    display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:stretch;
+  }
+  .team-select{
+    background:var(--bg-card);border:1px solid var(--line);border-radius:14px;padding:18px;
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .team-select.a{border-left:3px solid var(--flare);}
+  .team-select.b{border-left:3px solid var(--electric);}
+  .team-select label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-dim);}
+  select{
+    appearance:none;background:transparent;border:none;color:var(--fg);
+    font-family:'Inter',sans-serif;font-weight:700;font-size:19px;
+    padding:4px 0;cursor:pointer;
+  }
+  select:focus-visible{outline:2px solid var(--turf);outline-offset:3px;border-radius:4px;}
+  select option{background:var(--bg-raised);color:var(--fg);}
+  .vs{
+    align-self:center;font-family:'Anton',sans-serif;font-size:22px;color:var(--fg-dim);
+  }
+
+  /* ---------- heat index / split-flap ---------- */
+  .heat-panel{
+    margin-top:22px;
+    background:var(--bg-raised);border:1px solid var(--line);border-radius:16px;
+    padding:26px 28px;display:flex;flex-wrap:wrap;gap:28px;align-items:center;justify-content:space-between;
+  }
+  .heat-label{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--fg-dim);}
+  .flap-row{display:flex;gap:6px;margin-top:8px;}
+  .flap{
+    width:46px;height:64px;background:#000;border-radius:6px;position:relative;overflow:hidden;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,0.06);
+  }
+  .flap .digit{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-family:'Space Mono',monospace;font-weight:700;font-size:34px;color:var(--gold);
+    transition:transform 0.35s ease;
+  }
+  .flap::after{
+    content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(0,0,0,0.6);
+  }
+  .flap.flip .digit{animation:flipnum 0.4s ease;}
+  @keyframes flipnum{
+    0%{transform:translateY(-100%);opacity:0.3;}
+    60%{transform:translateY(6%);opacity:1;}
+    100%{transform:translateY(0);}
+  }
+  .heat-rank{
+    font-family:'Space Mono',monospace;font-size:12px;color:var(--fg-dim);
+  }
+  .heat-rank b{color:var(--gold);}
+
+  .hype-box{
+    margin-top:16px;background:var(--bg-card);border:1px dashed var(--line);border-radius:14px;
+    padding:18px 20px;font-size:15px;line-height:1.6;min-height:56px;
+  }
+  .hype-tag{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--electric);display:block;margin-bottom:6px;}
+
+  /* ---------- ticker ---------- */
+  .ticker-outer{
+    margin-top:34px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding:12px 0;overflow:hidden;white-space:nowrap;position:relative;
+  }
+  .ticker-outer::before, .ticker-outer::after{
+    content:'';position:absolute;top:0;bottom:0;width:60px;z-index:2;
+  }
+  .ticker-outer::before{left:0;background:linear-gradient(90deg,var(--bg),transparent);}
+  .ticker-outer::after{right:0;background:linear-gradient(270deg,var(--bg),transparent);}
+  .ticker-track{display:inline-block;animation:scroll 38s linear infinite;font-family:'Space Mono',monospace;font-size:13px;color:var(--fg-dim);}
+  .ticker-track span{margin-right:40px;}
+  .ticker-track .hot{color:var(--flare);}
+  @keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  /* ---------- sections ---------- */
+  section{padding:52px 0;}
+  .section-head{display:flex;align-items:baseline;gap:12px;margin-bottom:22px;}
+  .section-head h2{font-size:30px;}
+  .section-head .n{font-family:'Space Mono',monospace;color:var(--fg-dim);font-size:13px;}
+
+  /* ---------- submit form ---------- */
+  .board{
+    background:
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 26px),
+      #10281c;
+    border:1px solid rgba(47,162,95,0.35);border-radius:16px;padding:30px;
+  }
+  .board-title{font-family:'Anton',sans-serif;color:#dff5e6;font-size:22px;margin-bottom:18px;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field.full{grid-column:1 / -1;}
+  .field label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#a9d9bb;}
+  input[type=text], textarea, .form-grid select{
+    background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.14);border-radius:8px;
+    color:var(--fg);font-family:'Inter',sans-serif;font-size:14px;padding:10px 12px;
+  }
+  textarea{resize:vertical;min-height:78px;}
+  input:focus-visible, textarea:focus-visible, select:focus-visible{outline:2px solid var(--turf);outline-offset:1px;}
+  .charcount{font-family:'Space Mono',monospace;font-size:11px;color:var(--fg-dim);text-align:right;}
+  .slider-row{display:flex;align-items:center;gap:12px;}
+  input[type=range]{flex:1;accent-color:var(--flare);}
+  .slider-val{font-family:'Space Mono',monospace;font-weight:700;color:var(--gold);width:34px;text-align:center;}
+  .submit-btn{
+    margin-top:6px;background:var(--flare);color:#1a0a06;border:none;border-radius:10px;
+    font-family:'Inter',sans-serif;font-weight:700;font-size:14px;padding:13px 22px;cursor:pointer;
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .submit-btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(255,75,43,0.28);}
+  .form-note{font-family:'Space Mono',monospace;font-size:11px;color:#8fb89e;margin-top:10px;}
+
+  /* ---------- leaderboards ---------- */
+  .boards-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .lb{background:var(--bg-card);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  .lb-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;}
+  .lb-head h3{font-size:16px;color:var(--fg);}
+  .lb-head span{font-family:'Space Mono',monospace;font-size:10px;color:var(--fg-dim);text-transform:uppercase;letter-spacing:0.1em;}
+  table{width:100%;border-collapse:collapse;}
+  td,th{padding:11px 18px;font-size:13px;text-align:left;}
+  tbody tr{border-top:1px solid var(--line);}
+  .rank-badge{
+    font-family:'Space Mono',monospace;font-weight:700;font-size:12px;
+    width:22px;height:22px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;
+    background:rgba(232,185,48,0.14);color:var(--gold);
+  }
+  .rank-badge.top{background:var(--gold);color:#241a04;}
+  .num{font-family:'Space Mono',monospace;color:var(--fg-dim);}
+  .num.strong{color:var(--fg);font-weight:700;}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--line);padding:30px 0 50px;}
+  .foot-grid{display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;align-items:center;color:var(--fg-dim);font-size:13px;}
+  .stack-tags{display:flex;gap:8px;flex-wrap:wrap;}
+  .stack-tags span{
+    font-family:'Space Mono',monospace;font-size:11px;border:1px solid var(--line);border-radius:999px;
+    padding:5px 11px;color:var(--fg-dim);
+  }
+
+  @media (max-width:720px){
+    .matchup{grid-template-columns:1fr;}
+    .vs{justify-self:center;}
+    .form-grid{grid-template-columns:1fr;}
+    .boards-grid{grid-template-columns:1fr;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .ticker-track{animation:none;}
+    .flap.flip .digit{animation:none;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="headbar">
+      <div class="brand">
+        <div class="brand-mark">🔥</div>
+        <div class="brand-name">RIVALRY RADAR</div>
+      </div>
+      <div class="mode-pill"><span class="mode-dot"></span><span id="modeLabel">DEMO MODE — SIMULATED SCORING</span></div>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="eyebrow">WEEKEND CHALLENGE · PASSION EDITION · WORLD CUP 2026</div>
+    <h1 class="hero-title">Measure the <span class="accent">heat</span><br>of every rivalry.</h1>
+    <p class="hero-sub">Fans drop 280-character "Terrace Takes" on any World Cup matchup. Google AI (Gemini) scores the emotion behind every word, Snowflake stores every take and ranks the rivalries, and a live Heat Index tells you exactly whose blood is boiling hardest.</p>
+
+    <div class="matchup">
+      <div class="team-select a">
+        <label>Team A</label>
+        <select id="teamA"></select>
+      </div>
+      <div class="vs">VS</div>
+      <div class="team-select b">
+        <label>Team B</label>
+        <select id="teamB"></select>
+      </div>
+    </div>
+
+    <div class="heat-panel">
+      <div>
+        <div class="heat-label">Heat Index — Gemini sentiment × self-rated passion, ranked in Snowflake</div>
+        <div class="flap-row" id="flapRow"></div>
+      </div>
+      <div class="heat-rank" id="heatRank">Rivalry rank —</div>
+    </div>
+
+    <div class="hype-box">
+      <span class="hype-tag">Gemini (Google AI) · Hype Verdict</span>
+      <span id="hypeText">Loading the stadium announcer's take…</span>
+    </div>
+  </div>
+
+  <div class="ticker-outer">
+    <div class="ticker-track" id="tickerTrack"></div>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <h2>Drop a Terrace Take</h2>
+      <span class="n">→ scored the instant you submit</span>
+    </div>
+    <div class="board">
+      <div class="board-title">📣 What just happened out there?</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Your handle</label>
+          <input type="text" id="fanHandle" placeholder="e.g. terrace_ultra" maxlength="40">
+        </div>
+        <div class="field">
+          <label>Passion rating — how much did that hurt or thrill you?</label>
+          <div class="slider-row">
+            <input type="range" id="passionRating" min="1" max="10" value="7">
+            <div class="slider-val" id="passionVal">7</div>
+          </div>
+        </div>
+        <div class="field full">
+          <label>Your take</label>
+          <textarea id="takeText" maxlength="280" placeholder="Our attack tore them apart but the ref had other plans..."></textarea>
+          <div class="charcount"><span id="charCount">0</span>/280</div>
+        </div>
+      </div>
+      <button class="submit-btn" id="submitBtn">Send it to the Cloud ❄️</button>
+      <div class="form-note">Take is scored for sentiment by Gemini (Google AI), stored in Snowflake's FAN_TAKES table, and folded into the Heat Index via a SQL RANK() query.</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Live Leaderboards</h2>
+      <span class="n">RANK() OVER (ORDER BY heat_index DESC)</span>
+    </div>
+    <div class="boards-grid">
+      <div class="lb">
+        <div class="lb-head"><h3>🔥 Rivalry Heat Index</h3><span>by matchup</span></div>
+        <table><tbody id="rivalryTable"></tbody></table>
+      </div>
+      <div class="lb">
+        <div class="lb-head"><h3>🏆 Most Passionate Fanbase</h3><span>by team</span></div>
+        <table><tbody id="fanbaseTable"></tbody></table>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot-grid">
+      <div>Built for the DEV <b>Weekend Challenge: Passion Edition</b> · Rivalry Radar</div>
+      <div class="stack-tags">
+        <span>Snowflake</span>
+        <span>Google AI · Gemini</span>
+        <span>FastAPI</span>
+        <span>FastAPI</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+const TEAMS = {
+  BRA:{name:"Brazil",flag:"🇧🇷"}, ARG:{name:"Argentina",flag:"🇦🇷"},
+  FRA:{name:"France",flag:"🇫🇷"}, ENG:{name:"England",flag:"🏴"},
+  GER:{name:"Germany",flag:"🇩🇪"}, ESP:{name:"Spain",flag:"🇪🇸"},
+  POR:{name:"Portugal",flag:"🇵🇹"}, NED:{name:"Netherlands",flag:"🇳🇱"},
+  URU:{name:"Uruguay",flag:"🇺🇾"}, MAR:{name:"Morocco",flag:"🇲🇦"},
+  JPN:{name:"Japan",flag:"🇯🇵"}, USA:{name:"United States",flag:"🇺🇸"}
+};
+
+// ---- Seed data (stands in for rows already scored by Gemini + stored in Snowflake) ----
+let takes = [
+  {handle:"nervous_torcedor", team:"BRA", rival:"ARG", text:"Our midfield press turned their defense inside out, but the ref's whistle was a joke tonight.", passion:9},
+  {handle:"hincha_del_alma", team:"ARG", rival:"BRA", text:"Absolute masterclass. Their keeper had no answer for us. This rivalry lives forever.", passion:8},
+  {handle:"terrace_ultra", team:"ENG", rival:"FRA", text:"We dominated possession and still found a way to make it stressful. Classic us.", passion:6},
+  {handle:"le_supporter", team:"FRA", rival:"ENG", text:"Ice in our veins. Their fans were louder but we let the football do the talking.", passion:7},
+  {handle:"gruener_fan", team:"GER", rival:"ESP", text:"The manager's substitutions cost us the whole second half. Fuming.", passion:9},
+  {handle:"la_furia", team:"ESP", rival:"GER", text:"Tiki-taka is back baby, we passed them into the ground.", passion:8},
+  {handle:"oranje_gek", team:"NED", rival:"POR", text:"Their attack was relentless but our defense held strong when it mattered.", passion:6},
+  {handle:"celeste_fiel", team:"URU", rival:"MAR", text:"Heartbreak again. This rivalry is cursed for us.", passion:10},
+];
+
+// ---- Stand-in for the Gemini sentiment call — a real deployment calls Google AI instead ----
+function scoreSentiment(text){
+  const lowered = text.toLowerCase();
+  const neg = ["fuming","curse","cursed","joke","cost us","heartbreak"];
+  const mixed = ["but","still","however"];
+  let overall = "positive";
+  if(neg.some(w=>lowered.includes(w))) overall = "negative";
+  else if(mixed.some(w=>lowered.includes(w))) overall = "mixed";
+  const intensity = {positive:1,negative:1,mixed:0.85,neutral:0.2}[overall];
+  return {overall, intensity};
+}
+
+const HYPE_TEMPLATES = [
+  (a,b)=>`${a} fans are still buzzing, ${b} fans still fuming — this one's got no cure. 🔥`,
+  (a,b)=>`The takes don't lie: ${a} vs ${b} isn't a match, it's a blood feud with a scoreboard.`,
+  (a,b)=>`${a} brought the noise, ${b} brought the nerve. Neither side is backing down. 🌡️`,
+  (a,b)=>`Somewhere between heartbreak and glory, ${a} and ${b} keep finding new ways to hurt each other.`,
+];
+
+function rivalryKey(a,b){ return [a,b].sort().join("-"); }
+
+function populateSelects(){
+  const a = document.getElementById('teamA');
+  const b = document.getElementById('teamB');
+  Object.entries(TEAMS).forEach(([code,t])=>{
+    a.innerHTML += `<option value="${code}">${t.flag} ${t.name}</option>`;
+    b.innerHTML += `<option value="${code}">${t.flag} ${t.name}</option>`;
+  });
+  a.value = "BRA"; b.value = "ARG";
+}
+
+function computeRivalryStats(){
+  const groups = {};
+  takes.forEach(t=>{
+    const key = rivalryKey(t.team, t.rival);
+    const s = scoreSentiment(t.text);
+    groups[key] = groups[key] || {count:0, passionSum:0, intensitySum:0};
+    groups[key].count++;
+    groups[key].passionSum += t.passion;
+    groups[key].intensitySum += s.intensity;
+  });
+  const rows = Object.entries(groups).map(([key, g])=>{
+    const avgPassion = g.passionSum / g.count;
+    const avgIntensity = g.intensitySum / g.count;
+    const heat = avgPassion*0.5 + avgIntensity*3 + Math.log2(g.count+1)*2;
+    return {key, count:g.count, avgPassion, avgIntensity, heat};
+  });
+  rows.sort((x,y)=>y.heat-x.heat);
+  rows.forEach((r,i)=>r.rank=i+1);
+  return rows;
+}
+
+function computeFanbaseStats(){
+  const groups = {};
+  takes.forEach(t=>{
+    const s = scoreSentiment(t.text);
+    groups[t.team] = groups[t.team] || {count:0, passionSum:0, intensitySum:0};
+    groups[t.team].count++;
+    groups[t.team].passionSum += t.passion;
+    groups[t.team].intensitySum += s.intensity;
+  });
+  const rows = Object.entries(groups).map(([team,g])=>{
+    const avgPassion = g.passionSum/g.count;
+    const avgIntensity = g.intensitySum/g.count;
+    return {team, count:g.count, avgPassion, avgIntensity, score:avgPassion*avgIntensity};
+  });
+  rows.sort((x,y)=>y.score-x.score);
+  rows.forEach((r,i)=>r.rank=i+1);
+  return rows;
+}
+
+let lastHeatDigits = null;
+function renderFlapNumber(value){
+  const str = value.toFixed(1).padStart(4,'0');
+  const row = document.getElementById('flapRow');
+  row.innerHTML = '';
+  [...str].forEach((ch,i)=>{
+    const flap = document.createElement('div');
+    flap.className = 'flap';
+    if(lastHeatDigits && lastHeatDigits[i] !== ch) flap.classList.add('flip');
+    flap.innerHTML = `<div class="digit">${ch}</div>`;
+    row.appendChild(flap);
+  });
+  lastHeatDigits = [...str];
+}
+
+function renderHero(){
+  const a = document.getElementById('teamA').value;
+  const b = document.getElementById('teamB').value;
+  const key = rivalryKey(a,b);
+  const rivalryRows = computeRivalryStats();
+  const found = rivalryRows.find(r=>r.key===key);
+  renderFlapNumber(found ? found.heat : 0);
+  document.getElementById('heatRank').innerHTML = found
+    ? `Rivalry rank <b>#${found.rank}</b> of ${rivalryRows.length} · ${found.count} takes logged`
+    : `No takes yet for this matchup — be the first 👇`;
+
+  const template = HYPE_TEMPLATES[Math.floor(Math.random()*HYPE_TEMPLATES.length)];
+  document.getElementById('hypeText').textContent = template(TEAMS[a].name, TEAMS[b].name);
+}
+
+function renderTicker(){
+  const track = document.getElementById('tickerTrack');
+  const items = [...takes].slice(-12).reverse().map(t=>{
+    const s = scoreSentiment(t.text);
+    const hotClass = s.intensity >= 0.85 ? 'hot' : '';
+    return `<span class="${hotClass}">@${t.handle} (${TEAMS[t.team].flag}${t.team} vs ${TEAMS[t.rival].flag}${t.rival}) · passion ${t.passion}/10 — "${t.text}"</span>`;
+  });
+  track.innerHTML = items.join('') + items.join(''); // duplicate for seamless loop
+}
+
+function renderLeaderboards(){
+  const rivalryRows = computeRivalryStats();
+  const rTable = document.getElementById('rivalryTable');
+  rTable.innerHTML = rivalryRows.map(r=>{
+    const [a,b] = r.key.split('-');
+    const badgeClass = r.rank===1 ? 'rank-badge top' : 'rank-badge';
+    return `<tr>
+      <td><span class="${badgeClass}">${r.rank}</span></td>
+      <td>${TEAMS[a]?.flag||''} ${a} <span style="color:var(--fg-dim)">vs</span> ${TEAMS[b]?.flag||''} ${b}</td>
+      <td class="num strong">${r.heat.toFixed(2)}</td>
+      <td class="num">${r.count} takes</td>
+    </tr>`;
+  }).join('');
+
+  const fanRows = computeFanbaseStats();
+  const fTable = document.getElementById('fanbaseTable');
+  fTable.innerHTML = fanRows.map(r=>{
+    const badgeClass = r.rank===1 ? 'rank-badge top' : 'rank-badge';
+    return `<tr>
+      <td><span class="${badgeClass}">${r.rank}</span></td>
+      <td>${TEAMS[r.team]?.flag||''} ${TEAMS[r.team]?.name||r.team}</td>
+      <td class="num strong">${r.score.toFixed(2)}</td>
+      <td class="num">${r.count} takes</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderAll(){
+  renderHero();
+  renderTicker();
+  renderLeaderboards();
+}
+
+document.getElementById('teamA').addEventListener('change', renderAll);
+document.getElementById('teamB').addEventListener('change', renderAll);
+
+const passionSlider = document.getElementById('passionRating');
+passionSlider.addEventListener('input', ()=>{
+  document.getElementById('passionVal').textContent = passionSlider.value;
+});
+
+const takeText = document.getElementById('takeText');
+takeText.addEventListener('input', ()=>{
+  document.getElementById('charCount').textContent = takeText.value.length;
+});
+
+document.getElementById('submitBtn').addEventListener('click', ()=>{
+  const handle = document.getElementById('fanHandle').value.trim() || 'anon_fan';
+  const text = takeText.value.trim();
+  const team = document.getElementById('teamA').value;
+  const rival = document.getElementById('teamB').value;
+  const passion = parseInt(passionSlider.value, 10);
+  if(!text){ takeText.focus(); return; }
+
+  takes.push({handle, team, rival, text, passion});
+  takeText.value = '';
+  document.getElementById('charCount').textContent = '0';
+  renderAll();
+});
+
+populateSelects();
+renderAll();
+</script>
+</body>
+</html>
