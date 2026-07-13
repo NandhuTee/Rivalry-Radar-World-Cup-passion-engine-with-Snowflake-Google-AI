@@ -5,7 +5,7 @@ Fans drop 280-character **Terrace Takes** on any World Cup matchup. **Google AI
 **Hype Verdict**; **Snowflake** stores every take and computes a live **Heat
 Index** that ranks exactly which rivalry is boiling hottest right now.
 
-> Built for the DEV **Weekend Challenge: Passion Edition** 🏆 Best Use of Google AI
+> Built for the DEV **Weekend Challenge: Passion Edition** 🏆 Best Use of Google AI and Best Use of Snowflake 
 
 ## Why this exists
 
@@ -108,8 +108,13 @@ prompt = (
 
 ## Prize category
 
-**Best Use of Google AI** — Gemini does the real intelligence work behind
+**Best Use of Google AI and Snowflake** — Gemini does the real intelligence work behind
 this project: reading the emotion in every fan take and writing the Hype
 Verdict. Snowflake plays an honest, secondary role as the data warehouse —
 storing every take and doing the ranking analytics (`RANK() OVER`,
 aggregation) that turns Gemini's scores into a leaderboard.
+
+
+##demo
+
+Demo: [https://youtu.be/r-UcEJr9sdY](https://youtu.be/r-UcEJr9sdY)
