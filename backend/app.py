@@ -19,6 +19,7 @@ dependencies for local exploration.
 import os
 import uuid
 import random
+
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -179,6 +180,11 @@ if DEMO_MODE:
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
+@app.get("/")
+def root():
+    return {"status": "ok", "message": "Rivalry Radar API is running", "docs": "/docs"}
+
+
 @app.get("/api/teams")
 def list_teams():
     return [{"code": c, "name": n, "flag": f, "color": col} for c, (n, f, col) in TEAMS.items()]
