@@ -5,7 +5,7 @@ Fans drop 280-character **Terrace Takes** on any World Cup matchup. **Google AI
 **Hype Verdict**; **Snowflake** stores every take and computes a live **Heat
 Index** that ranks exactly which rivalry is boiling hottest right now.
 
-> Built for the DEV **Weekend Challenge: Passion Edition** 🏆 Best Use of Google AI
+> Built for the DEV **Weekend Challenge: Passion Edition** 🏆 Best Use of Google AI and Best Use of Snowflake 
 
 ## Why this exists
 
