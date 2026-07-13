@@ -118,3 +118,6 @@ aggregation) that turns Gemini's scores into a leaderboard.
 ##demo
 
 Demo: [https://youtu.be/r-UcEJr9sdY](https://youtu.be/r-UcEJr9sdY)
+## Backend API
+
+🔗 [Live Backend API](https://rivalry-radar-world-cup-passion-engine.onrender.com)
